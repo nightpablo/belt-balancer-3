@@ -16,9 +16,7 @@ end
 ---@return Part
 function part_functions.get_or_create(entity)
     local storage_part = storage.parts[entity.unit_number]
-    local output = ""
     if storage_part then
-        output = "balancer loaded: " .. entity.unit_number
         return storage_part
     end
 
@@ -202,9 +200,9 @@ function part_functions.remove(entity, buffer)
     end
     local balancer = storage.balancer[part.balancer]
 
-    if not balancer or not balancer.valid then
+    -- if not balancer or not balancer.valid then
 	    -- game.print("removed `cursed' part")
-    end
+    -- end
 
     -- remove part from balancer
     if balancer then
@@ -227,8 +225,8 @@ function part_functions.remove(entity, buffer)
             for _, pos in pairs(into_pos) do
                 local entity_pos = part.entity.position
                 if entity_pos.x == pos.position.x
-		    and entity_pos.y == pos.position.y
-		    and balancer then
+                    and entity_pos.y == pos.position.y
+                    and balancer then
                     -- remove lanes from balancer
                     for _, lane_index in pairs(pos.lanes) do
                         local lane = belt.lanes[lane_index]
