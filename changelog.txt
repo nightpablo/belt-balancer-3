@@ -1,10 +1,10 @@
-Version: 3.0.1
+Version: 1.0.1
 Date: 18.11.2025
   Changes:
     - 'durability' bug discovered thanks to cartwer.
     - Fixed thanks to Maximagor.
 
-Version: 3.0.0
+Version: 1.0.0
 Date: 01.11.2025
   Changes:
     - Fixing bugs by version 2
