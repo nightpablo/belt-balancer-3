@@ -1,8 +1,8 @@
 {
   "name": "belt-balancer-3",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "title": "Belt Balancer 3",
-  "author": "NightPablo",
+  "author": "NightPablo(Original), edits by Soundwave",
   "contact": "nightpablo1991@gmail.com",
   "factorio_version": "2.0",
   "dependencies": [
@@ -11,7 +11,8 @@
     "!belt-balancer-2",
     "!belt-balancer-performance",
     "(?) space-age",
-    "(?) loaders-modernized"
+    "(?) loaders-modernized",
+    "(?) comfortable-loader"
   ],
   "description": "Adds Balancer Parts, that can be put together, to balance all adjusting lanes. Updated for better performance and Factorio 2.0, fixing some bugs from previous versions."
 }
