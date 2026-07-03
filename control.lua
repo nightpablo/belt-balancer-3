@@ -109,7 +109,8 @@ function built_entity(e)
     if not string.find(entity.name, "balancer") 
         and not string.find(entity.type, "belt") 
         and entity.type ~= "splitter" 
-        and not string.find(entity.name, ".*mdrn%-loader") then
+        and not string.find(entity.name, ".*mdrn%-loader")
+        and not string.find(entity.name, "*-loader") then
         return
     end
 
@@ -117,7 +118,7 @@ function built_entity(e)
         part_functions.built(entity)
     end
 
-    if string.find(entity.type, "belt") or string.find(entity.name, ".*mdrn%-loader") then
+    if string.find(entity.type, "belt") or string.find(entity.name, ".*mdrn%-loader") or string.find(entity.name, "*-loader") then
         belt_functions.built_belt(entity)
     end
 
@@ -152,7 +153,8 @@ function remove_entity(e)
     if not string.find(entity.name, "balancer") 
         and not string.find(entity.type, "belt") 
         and entity.type ~= "splitter" 
-        and not string.find(entity.name, ".*mdrn%-loader") then
+        and not string.find(entity.name, ".*mdrn%-loader")
+        and not string.find(entity.name, "*-loader") then
         return
     end
 
@@ -160,7 +162,7 @@ function remove_entity(e)
         part_functions.remove(entity, e.buffer)
     end
 
-    if string.find(entity.type, "belt") or string.find(entity.name, ".*mdrn%-loader") then
+    if string.find(entity.type, "belt") or string.find(entity.name, ".*mdrn%-loader") or string.find(entity.name, "*-loader") then
         belt_functions.remove_belt(entity)
     end
 
@@ -187,6 +189,11 @@ script.on_event({ defines.events.on_player_rotated_entity },
         end
 
         if string.find(e.entity.name, ".*mdrn%-loader") then
+            belt_functions.remove_belt(e.entity, e.previous_direction)
+            belt_functions.built_belt(e.entity)
+        end
+
+        if string.find(e.entity.name, "*-loader") then
             belt_functions.remove_belt(e.entity, e.previous_direction)
             belt_functions.built_belt(e.entity)
         end
