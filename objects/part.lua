@@ -215,7 +215,7 @@ function part_functions.remove(entity, buffer)
     for _, belt_index in pairs(part.input_belts) do
         local belt = storage.belts[belt_index]
 
-        if not belt or belt == nil or not belt.valid then
+        if not belt or not belt.entity.valid then
         	goto continue
         end
 
@@ -236,8 +236,8 @@ function part_functions.remove(entity, buffer)
             end
 
             -- check if lanes are still in the balancer
+            local found_lane = false
             if balancer then
-                local found_lane = false
                 for lane, _ in pairs(balancer.input_lanes) do
                     if table.contains(belt.lanes, lane) then
                     found_lane = true
@@ -272,7 +272,7 @@ function part_functions.remove(entity, buffer)
         local belt = storage.belts[belt_index]
 		
         -- Check if belt is not a nil value
-        if not belt or belt == nil or not belt.valid then
+        if not belt or not belt.entity.valid then
         	goto continue
         end
 		

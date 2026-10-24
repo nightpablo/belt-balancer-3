@@ -29,7 +29,11 @@ function unregister_on_tick(balancer_index)
 end
 
 function on_tick(e)
-    for _, balancer_id in pairs(storage.events[e.nth_tick]) do
+    local balancers = storage.events[e.nth_tick]
+    if not balancers then
+        return
+    end
+    for _, balancer_id in pairs(balancers) do
         balancer_functions.run(balancer_id)
     end
 end

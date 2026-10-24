@@ -3,7 +3,11 @@ require("objects.balancer")
 require("objects.part")
 require("objects.belt")
 require("helper.message-handler")
-require("test")
+
+-- test.lua is ~2000 lines and only used by the debug commands below, so don't load it in normal games
+if debug and script.active_mods["creative-mod"] then
+    require("test")
+end
 
 -- on new savegame and on adding mod to existing save
 script.on_init(function()
@@ -91,37 +95,29 @@ if debug and script.active_mods["creative-mod"] then
     end)
 end
 
+-- entity types handled like belts (loader types cover every loader mod, no name matching needed)
+local BELT_TYPES = {
+    ["transport-belt"] = true,
+    ["underground-belt"] = true,
+    ["linked-belt"] = true,
+    ["loader"] = true,
+    ["loader-1x1"] = true,
+}
+
 function built_entity(e)
     ---@type LuaEntity
-    local entity
-    if e.entity then
-        entity = e.entity
-    elseif e.created_entity then
-        entity = e.created_entity
-    else
-        entity = e.destination -- this is the name of the entity from on_entity_cloned
-    end
+    local entity = e.entity or e.destination -- `destination` comes from on_entity_cloned
 
     if not entity or not entity.valid then
         return
     end
 
-    if not string.find(entity.name, "balancer") 
-        and not string.find(entity.type, "belt") 
-        and entity.type ~= "splitter" 
-        and not string.find(entity.name, ".*mdrn%-loader") then
-        return
-    end
-
+    local entity_type = entity.type
     if entity.name == "balancer-part" then
         part_functions.built(entity)
-    end
-
-    if string.find(entity.type, "belt") or string.find(entity.name, ".*mdrn%-loader") then
+    elseif BELT_TYPES[entity_type] then
         belt_functions.built_belt(entity)
-    end
-
-    if entity.type == "splitter" then
+    elseif entity_type == "splitter" then
         belt_functions.built_splitter(entity)
     end
 end
@@ -133,7 +129,6 @@ script.on_event(
         defines.events.script_raised_built,
         defines.events.on_space_platform_built_entity,
         defines.events.script_raised_revive,
-        defines.events.on_post_entity_died,
         defines.events.on_entity_cloned -- fix compatability with region cloner
     },
     built_entity
@@ -141,30 +136,18 @@ script.on_event(
 
 function remove_entity(e)
     ---@type LuaEntity
-    local entity
+    local entity = e.entity
 
-    if e.entity then
-        entity = e.entity
-    else
-        entity = e.created_entity
-    end
-
-    if not string.find(entity.name, "balancer") 
-        and not string.find(entity.type, "belt") 
-        and entity.type ~= "splitter" 
-        and not string.find(entity.name, ".*mdrn%-loader") then
+    if not entity or not entity.valid then
         return
     end
 
+    local entity_type = entity.type
     if entity.name == "balancer-part" then
         part_functions.remove(entity, e.buffer)
-    end
-
-    if string.find(entity.type, "belt") or string.find(entity.name, ".*mdrn%-loader") then
+    elseif BELT_TYPES[entity_type] then
         belt_functions.remove_belt(entity)
-    end
-
-    if entity.type == "splitter" then
+    elseif entity_type == "splitter" then
         belt_functions.remove_splitter(entity)
     end
 end
@@ -181,33 +164,30 @@ script.on_event(
 
 script.on_event({ defines.events.on_player_rotated_entity },
     function(e)
-        if e.entity.type == "transport-belt" then
-            belt_functions.remove_belt(e.entity, e.previous_direction)
-            belt_functions.built_belt(e.entity)
+        local entity = e.entity
+        if not entity.valid then
+            return
         end
+        local entity_type = entity.type
 
-        if string.find(e.entity.name, ".*mdrn%-loader") then
-            belt_functions.remove_belt(e.entity, e.previous_direction)
-            belt_functions.built_belt(e.entity)
-        end
+        if entity_type == "transport-belt" or entity_type == "loader" or entity_type == "loader-1x1" then
+            belt_functions.remove_belt(entity, e.previous_direction)
+            belt_functions.built_belt(entity)
+        elseif entity_type == "underground-belt" then
+            belt_functions.remove_belt(entity, e.previous_direction)
+            belt_functions.built_belt(entity)
 
-        if e.entity.type == "underground-belt" then
-            belt_functions.remove_belt(e.entity, e.previous_direction)
-            belt_functions.built_belt(e.entity)
-
-            -- Neighbour is only the other end
-            local neighbour = e.entity.neighbours
+            -- Neighbour is only the other end (`neighbours` was replaced by `underground_belt_neighbour` in 2.1)
+            local neighbour = entity.underground_belt_neighbour
             if neighbour and neighbour.valid then
-                -- make neighbour also have previous_direction
-                local previous_direction = (neighbour.direction + 4) % 8
+                -- rotating one end turns the whole pair by 180 degrees (16 directions since 2.0)
+                local previous_direction = (neighbour.direction + defines.direction.south) % 16
                 belt_functions.remove_belt(neighbour, previous_direction)
                 belt_functions.built_belt(neighbour)
             end
-        end
-
-        if e.entity.type == "splitter" then
-            belt_functions.remove_splitter(e.entity, e.previous_direction)
-            belt_functions.built_splitter(e.entity)
+        elseif entity_type == "splitter" then
+            belt_functions.remove_splitter(entity, e.previous_direction)
+            belt_functions.built_splitter(entity)
         end
     end
 )

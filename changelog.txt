@@ -1,3 +1,22 @@
+Version: 1.0.2
+Date: 24.10.2026
+  Changes:
+    - Migrated to Factorio 2.1 (factorio_version and base dependency raised to 2.1).
+    - 2.1 API: replaced the removed LuaEntity::neighbours with LuaEntity::underground_belt_neighbour when rotating underground belts.
+    - Fixed the "other end" direction of a rotated underground belt: it now uses the 16-direction enum (180 degrees = +8 modulo 16) instead of the old 8-direction maths.
+    - Loaders: every loader is now detected by prototype type (loader / loader-1x1) instead of by name, so any loader mod works, not only Loaders Modernized.
+    - Removed the unused on_post_entity_died handler (that event has no 'entity' field) and the dead 'created_entity' fallback.
+    - Entity handlers now use a type lookup table and an if/elseif chain instead of several string.find calls per event.
+    - Memory leak: removing a balancer part never cleaned its belts and lanes from 'storage' (the code checked 'belt.valid' on a plain table). It now checks 'belt.entity.valid'.
+    - Fixed a scoping bug where 'found_lane' was always nil when a splitter was removed from a balancer's input side.
+    - Fixed belt_functions.check_track using an undefined variable, which could leave 'next_belt_check' pointing at a deleted belt (crash in on_tick).
+    - Fixed a possible crash in the nth_tick handler when its event list no longer exists.
+    - test.lua (about 2000 lines) is only loaded when running with debug and creative-mod, which saves memory in normal games.
+    - Removed a debug print of the whole technology table at startup.
+    - Fixed the typo 'wieght' in the balancer-part item prototype (now 'weight'; the intended 25 kg is applied).
+  Thanks:
+    - 6oundwave, for presenting the solution to make the mod compatible with several loader mods.
+
 Version: 1.0.1
 Date: 18.11.2025
   Changes:

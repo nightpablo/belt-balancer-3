@@ -196,13 +196,11 @@ function belt_functions.built_belt(belt)
             from_part = nil
         end
     end
-    if script.active_mods["loaders-modernized"] then
-        if string.find(belt.name, ".*mdrn%-loader") then
-            if belt.loader_type == "input" then
-                into_part = nil
-            elseif belt.loader_type == "output" then
-                from_part = nil
-            end
+    if belt.type == "loader" or belt.type == "loader-1x1" then
+        if belt.loader_type == "input" then
+            into_part = nil
+        elseif belt.loader_type == "output" then
+            from_part = nil
         end
     end
 
@@ -452,7 +450,7 @@ function belt_functions.check_track(belt_index)
         end
 
         -- make sure we don't try to next() this belt later
-        if unit_number == storage.next_belt_check then
+        if belt_index == storage.next_belt_check then
             storage.next_belt_check, _ = next(storage.belts, storage.next_belt_check)
         end
         

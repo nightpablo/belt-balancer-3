@@ -58,7 +58,6 @@ data:extend {
 }
 
 if mods["space-age"] then
-    print(data.raw.technology)
     data:extend {
         {
             type = "technology",

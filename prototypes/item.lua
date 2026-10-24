@@ -8,6 +8,6 @@ data:extend {
         order = "c[splitter]-x[balancer]",
         place_result = "balancer-part",
         stack_size = 50,
-        wieght = 25*kg,
+        weight = 25*kg,
     },
 }
